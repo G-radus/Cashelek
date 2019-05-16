@@ -6,5 +6,7 @@ target 'Cashelek' do
   pod 'Alamofire'
   pod 'SwiftyJSON'
   pod 'GoogleMaps'
+  pod 'AlamofireImage'
+
   
 end

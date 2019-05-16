@@ -13,6 +13,7 @@ class VenueTableViewCell: UITableViewCell {
     @IBOutlet weak var labelName: UILabel!
     @IBOutlet weak var labelAddress: UILabel!
     @IBOutlet weak var labelDistance: UILabel!
+    @IBOutlet weak var imageCategories: UIImageView!
     
     
     

@@ -10,6 +10,7 @@ import UIKit
 import CoreLocation
 import Alamofire
 import SwiftyJSON
+import AlamofireImage
 
 // энум - просто для удобства вызова
 enum Constants {
@@ -31,10 +32,14 @@ class VenuesTableViewController: UITableViewController {
     
     let locationManager = CLLocationManager()
     
+    //создаю константу очереди для загрузки картинок не в основном потоке
+//    let imageQueue = OperationQueue()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         locationManager.delegate = self
+        locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters
         
         //проверяю текущий статус авторизации доступа к локации
         if CLLocationManager.authorizationStatus() == .notDetermined {
@@ -94,6 +99,14 @@ class VenuesTableViewController: UITableViewController {
                     venue.latitude = object["location"]["lat"].doubleValue
                     venue.longitude = object["location"]["lng"].doubleValue
                     venue.distance = object["location"]["distance"].intValue
+                    
+                    //получаю данные об иконках к категориям по адресу
+                    if let category = object["categories"].array?.first {
+                        let prefix = category["icon"]["prefix"].stringValue
+                        let suffix  = category["icon"]["suffix"].stringValue
+                        let string = "\(prefix)bg_64\(suffix)"
+                        venue.iconURL = URL(string: string)
+                    }
                     //добавляю его в массив
                     results.append(venue)
                 }
@@ -137,9 +150,30 @@ class VenuesTableViewController: UITableViewController {
             cell.labelDistance.text = ""
         }
         
+        if let iconURL = venue.iconURL {
+            cell.imageCategories.af_setImage(withURL: iconURL)
+        } else {
+            cell.imageCategories.image = nil
+        }
+       //этот код если грузить картинки самому, без AlomofireImage
+//        if let iconURL = venue.iconURL {
+//            //достаю картинку по адресу
+//            imageQueue.addOperation ({
+//                //здесь загрузка произошла НЕ в главном потоке
+//                let data = try! Data(contentsOf: iconURL)
+//                let image = UIImage(data: data)
+//                //а тут доступ к главному потоку, в котором присваиваю картинки
+//                OperationQueue.main.addOperation ({
+//                    cell.imageCategories.image = image
+//                })
+//            })
+//
+//        } else {
+//            //TODO: find default pic
+//            cell.imageCategories.image = nil
+//        }
         return cell
     }
-    
     //Методы делагата
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
@@ -184,3 +218,4 @@ extension VenuesTableViewController: CLLocationManagerDelegate {
     }
     
 }
+

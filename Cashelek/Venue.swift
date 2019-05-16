@@ -23,6 +23,7 @@ class Venue: NSManagedObject {
     @NSManaged var longitude: Double
     
     var distance: Int? // в метрах
+    var iconURL: URL?
     
     class var entityDescription: NSEntityDescription {
         return NSEntityDescription.entity(forEntityName: "Venue", in: CoreDataHelper.shared.container.viewContext)!
